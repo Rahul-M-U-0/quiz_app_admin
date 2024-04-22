@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:quiz_admin/screens/add_category_screen.dart';
+import 'package:quiz_admin/screens/main_screen.dart';
 
 class CategoryScreen extends StatefulWidget {
   const CategoryScreen({super.key});
@@ -73,29 +75,83 @@ class _CategoryScreenState extends State<CategoryScreen> {
                               return Material(
                                 elevation: 5,
                                 borderRadius: BorderRadius.circular(10),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    // color: Color.fromRGBO(247, 246, 242, 1),
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      SizedBox(
-                                        height: 110,
-                                        child: Image.network(
-                                            csnapshot.data!['image']),
-                                      ),
-                                      Text(
-                                        csnapshot.data!['name'],
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w700,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          content: Text(
+                                            "Do you want to delete ${csnapshot.data!['name']}",
+                                            style:
+                                                const TextStyle(fontSize: 20),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text(
+                                                "Cancel",
+                                                style: TextStyle(
+                                                  color: Colors.blue,
+                                                  fontSize: 18,
+                                                ),
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () async {
+                                                await FirebaseFirestore.instance
+                                                    .collection('category')
+                                                    .doc(
+                                                        csnapshot.data!['name'])
+                                                    .delete();
+                                                Navigator.of(context)
+                                                    .pushAndRemoveUntil(
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              MainScreen(),
+                                                        ),
+                                                        (route) => false);
+                                              },
+                                              child: const Text(
+                                                "Ok",
+                                                style: TextStyle(
+                                                  color: Colors.blue,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      // color: Color.fromRGBO(247, 246, 242, 1),
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        SizedBox(
+                                          height: 110,
+                                          child: Image.network(
+                                              csnapshot.data!['image']),
                                         ),
-                                      ),
-                                    ],
+                                        Text(
+                                          csnapshot.data!['name'],
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               );
