@@ -55,8 +55,7 @@ class _AddQuizScreenState extends State<AddQuizScreen> {
   }
 
   uploadItem() async {
-    if (selectedImage != null &&
-        questionController.text != "" &&
+    if (questionController.text != "" &&
         option1Controller.text != "" &&
         option2Controller.text != "" &&
         option3Controller.text != "" &&
@@ -71,12 +70,15 @@ class _AddQuizScreenState extends State<AddQuizScreen> {
         Reference firebaseStorageRef =
             FirebaseStorage.instance.ref().child("blogImage").child(addId);
 
-        final UploadTask task = firebaseStorageRef.putFile(selectedImage!);
-
-        var downloadUrl = await (await task).ref.getDownloadURL();
+        final UploadTask task;
+        var downloadUrl;
+        if (selectedImage != null) {
+          task = firebaseStorageRef.putFile(selectedImage!);
+          downloadUrl = await (await task).ref.getDownloadURL();
+        }
 
         Map<String, dynamic> addQuiz = {
-          "image": downloadUrl,
+          "image": selectedImage == null ? null : downloadUrl,
           "question": questionController.text,
           "option1": option1Controller.text,
           "option2": option2Controller.text,
